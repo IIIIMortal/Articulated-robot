@@ -1,0 +1,62 @@
+clear;
+close all;
+clc;
+
+syms roll, pitch, yaw;
+syms alpha, beta, gamma;
+
+euler = input('euler');
+[alpha,beta,gamma] = euler
+
+R0w = [cos(alpha),  sin(alpha), 0; ...
+    -sin(alpha),    cos(alpha), 0; ... 
+    0,  0,  1] * ... 
+    [cos(beta),	0,  -sin(beta); ...
+    0,  1,  0; ...
+    sin(beta),  0,  cos(beta)] * ...
+    [1, 0,  0; ...
+    0,  cos(gamma), sin(gamma); ...    
+    0,  -sin(gamma),    cos(gamma)];
+
+
+a = [0      225     0       0       0       0];
+d = [284    0       0       229   0       55];
+alpha = [pi/2       0       pi/2    -pi/2   pi/2    0];
+
+rwp = [0;   0;  d(6)];
+
+[ndx;   ndy;    ndz] = [dx; dy; dz] - R0w * rwp;
+
+
+
+theta1 = atan(ndy/ndx);
+
+
+h = ndy/sin(theta1);
+
+st3 = asin((ndz-284)^2 + h^2 - 225^2 - rwp(3)^2) / (450 * rwp(3)) ;
+
+
+d = rwp(3) * cos(st3);
+f = 225 + rwp(3) * sin(theta3);
+g = ndz - 284;
+
+theta2 = atan((h*d + g*f) / (h*f - g*d));
+
+
+R01 = [ cos(theta1),            - cos(alpha(1)) * sin(theta1),             sin(alpha(1)) * sin(theta1); ...
+    sin(theta1),                cos(alpla(1)) * cos(theta1),                -sin(alpha(1)) * cos(theta1); ...
+    0,                          sin(alpha(1)),                              cos(alpha(1))];
+
+R12 = [ cos(theta2),            - cos(alpha(2)) * sin(theta2),             sin(alpha(2)) * sin(theta2); ...
+    sin(theta2),                cos(alpla(2)) * cos(theta2),                -sin(alpha(2)) * cos(theta2); ...
+    0,                          sin(alpha(2)),                              cos(alpha(2))];
+
+R23 = [ cos(theta3),            - cos(alpha(3)) * sin(theta3),             sin(alpha(3)) * sin(theta3); ...
+    sin(theta3),                cos(alpla(3)) * cos(theta3),                -sin(alpha(3)) * cos(theta3); ...
+    0,                          sin(alpha(3)),                              cos(alpha(3))];
+
+R03 = R01 * R12 * R23;
+
+
+R36 = inv(R03);
